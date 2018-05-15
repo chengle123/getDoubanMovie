@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>豆瓣采集</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.css">
+    <!--<link rel="stylesheet" href="css/default.min.css">-->
+</head>
+<body>
+    <h1 class="text-center">豆瓣采集</h1>
+    <hr>
+    <div class="container-fluid">
+        <div class="row ">
+            <div class="col-md-offset-4 col-md-3 form-horizontal">
+                <div class="form-group">
+                    <label for="ID" class="col-sm-3 control-label">豆瓣ID</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="ID" placeholder="0000000" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="URL" class="col-sm-3 control-label">云盘地址</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="URL" placeholder="http://pan.baidu.com/..." required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="pasword" class="col-sm-3 control-label">云盘密码</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="pasword" placeholder="xxxx" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-3 col-sm-9">
+                        <button type="submit" class="btn btn-danger btn-block" id="submit">采集</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content row">
+            <h2 class="text-center">代码</h2>
+            <hr>
+            <div class="col-md-offset-3 col-md-6">
+                <pre>
+                    <code class="html" id="content"></code>
+                </pre>
+            </div>
+        </div>
+    </div>
+<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="js/highlight.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+    $(function(){
+        $('#submit').on('click',function(){
+            var ops = {
+                id: $('#ID').val(),
+                url: $('#URL').val(),
+                pasword: $('#pasword').val()
+            };
+            if(!ops.id){
+                alert('请填写id');
+                return;
+            }
+            if(!ops.url){
+                alert('请填写链接');
+                return;
+            }
+            if(!ops.pasword){
+                alert('请填写密码');
+                return;
+            }
+            $.post("/getData",{
+                id: ops.id,
+                url: ops.url,
+                pasword: ops.pasword
+            },function(data){
+                if(data.result === 'success'){
+                    $('#content').text(data.data);
+                }else{
+                    $('#content').text('');
+                    alert(data.msg);
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>
