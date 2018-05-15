@@ -5,6 +5,7 @@ var path = require('path');
 var express = require('express');
 var bodyParser = require('body-parser');
 var router = express.Router();
+// const issueList = require('./models/issue');
 
 var cheerio = require('cheerio');
 
@@ -18,17 +19,19 @@ var server = app.listen(9696, function() {
 	console.log('Ready');
 });
 
+// var create = (ops) => {
+// 	issueList.create(ops).then((row)=>{
+// 		console.log('插入一条数据')
+// 	},(data)=>{
+// 		exist = true;
+// 		// console.log(data)
+// 		console.log('插入失败')
+// 	});
+// }
+
 router.post('/getData', function(req, res) {
-    console.log('收到',req.body)
-    var ops = req.body;
-    // var json = startRequest(ops);
-    startRequest(ops,res);
-    // console.log(json)
-    // res.json({
-    //     result: json.result,
-    //     data: json.data,
-    //     msg: json.msg
-    // });
+    console.log('收到',req.body);
+    startRequest(req.body,res);
 })
 
 app.use('/', router);
