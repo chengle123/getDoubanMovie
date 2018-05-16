@@ -1,31 +1,39 @@
 const Sequelize= require('sequelize');
 var seq = require('./config.js').seq;
 
-var issue = seq.define('issue', {
-    id: {
+var zbp_tag = seq.define('zbp_tag', {
+    tag_ID: {
         autoIncrement:true,
         type: Sequelize.INTEGER,
         allowNull:false,
         primaryKey: true,
         comment: "编码 自增值且是主键"
     },
-    title:{
+    tag_Name:{
         type: Sequelize.STRING,
         allowNull: false
     },
-    qid:{
+    tag_Order:{
         type: Sequelize.INTEGER,
         allowNull:true
     },
-    select:{
+    tag_Count:{
+        type: Sequelize.INTEGER,
+        allowNull:true
+    },
+    tag_Alias:{
         type: Sequelize.STRING,
         allowNull:true
     },
-    resolve:{
+    tag_Intro:{
         type: Sequelize.STRING,
         allowNull:true
     },
-    answer:{
+    tag_Template:{
+        type: Sequelize.STRING,
+        allowNull:true
+    },
+    tag_Meta:{
         type: Sequelize.STRING,
         allowNull:true
     },
@@ -34,4 +42,4 @@ var issue = seq.define('issue', {
     timestamps: false
 });
 
-module.exports = issue;
+module.exports = zbp_tag;

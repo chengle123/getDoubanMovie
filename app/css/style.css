@@ -102,3 +102,18 @@ hue-6-2: #c18401
 .hljs-link {
   text-decoration: underline;
 }
+
+
+
+/*------------------------------------*/
+#contentHtml{
+  border-left: 1px solid #eee;
+}
+#tag button,
+#category button {
+  margin:0 5px 5px 0;
+}
+#console,
+.content{
+  display: none;
+}

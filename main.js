@@ -5,7 +5,10 @@ var path = require('path');
 var express = require('express');
 var bodyParser = require('body-parser');
 var router = express.Router();
-// const issueList = require('./models/issue');
+const zbp_category = require('./models/zbp_category');
+const zbp_post = require('./models/zbp_post');
+const zbp_tag = require('./models/zbp_tag');
+const zbp_module = require('./models/zbp_module');
 
 var cheerio = require('cheerio');
 
@@ -19,15 +22,69 @@ var server = app.listen(9696, function() {
 	console.log('Ready');
 });
 
-// var create = (ops) => {
-// 	issueList.create(ops).then((row)=>{
-// 		console.log('插入一条数据')
-// 	},(data)=>{
-// 		exist = true;
-// 		// console.log(data)
-// 		console.log('插入失败')
-// 	});
-// }
+router.post('/setDB', function(req, res) {
+    var tagData = JSON.parse(req.body.tag);
+    try{
+		zbp_post.create({
+            log_CateID: req.body.category,
+            log_AuthorID: 1,
+            log_Tag: req.body.tagText,
+            log_Title: req.body.title,
+            log_Intro: req.body.htmlText,
+            log_Content: req.body.html,
+            log_PostTime: req.body.time
+        }).then(function(rows){
+            res.json({
+                result: 'success',
+                data: '',
+                msg: '数据插入成功'
+            })
+
+            try{
+                zbp_category.find({where:{cate_ID:req.body.category}}).then(function(rows){
+                    var cate_Count = rows.cate_Count+1;
+                    try{
+                        zbp_category.update({cate_Count:cate_Count},{where:{cate_ID:req.body.category}}).then(function(rows){
+                            console.log('修改分类成功');
+                        })
+                    }catch(e) {
+                        console.log('修改分类失败');
+                    }
+                })
+            }catch(e) {
+                console.log('查询分类失败');
+            }
+            
+            try{
+                zbp_module.find({where:{mod_ID:'8'}}).then(function(rows){
+                    var mod_ContentA = rows.mod_Content.split('\r\n');
+                    var num = parseInt(mod_ContentA[0].split(':')[1]);
+                    mod_ContentA[0] = '<li>文章总数:'+(num+1)+'</li>';
+                    try{
+                        zbp_module.update({mod_Content: mod_ContentA.join("\r\n")},{where:{mod_ID:8}}).then(function(rows){
+                            console.log('修改站点信息成功');
+                        })
+                    }catch(e) {
+                        console.log('修改站点信息失败');
+                    }
+                })
+            }catch(e) {
+                console.log('查询站点信息失败');
+            }
+
+            for(var i=0;i<tagData.length;i++){
+                updateTag(tagData[i]);
+            }
+		})
+	}catch(e) {
+        res.json({
+            result: 'error',
+            data: '',
+            msg: '数据插入失败'
+        })
+        console.log('数据插入失败');
+	}
+})
 
 router.post('/getData', function(req, res) {
     console.log('收到',req.body);
@@ -35,6 +92,23 @@ router.post('/getData', function(req, res) {
 })
 
 app.use('/', router);
+
+function updateTag(id){
+    try{
+        zbp_tag.find({where:{tag_ID: id}}).then(function(rows){
+            var tag_Count = rows.tag_Count+1;
+            try{
+                zbp_tag.update({tag_Count: tag_Count},{where:{tag_ID: id}}).then(function(rows){
+                    console.log('修改标签成功');
+                })
+            }catch(e) {
+                console.log('修改标签失败');
+            }
+        })
+    }catch(e) {
+        console.log('查询标签失败');
+    }
+}
 
 
 // 爬虫======================================================================================
@@ -85,7 +159,7 @@ function startRequest(ops,resJson){
                 var b = $('#info > .pl');
                 b.each(function(){
                     if($(this).text() == '类型:'){
-                        labelHtml += '<p>'+ $(this).text() +' '+ text +'</p>';
+                        labelHtml += '<p id="returnTag">'+ $(this).text() +' '+ text +'</p>';
                     }else if($(this).next().text()){
                         labelHtml += '<p>'+ $(this).text() +' '+ $(this).next().text() +'</p>';
                     }else{
