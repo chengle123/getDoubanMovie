@@ -215,6 +215,12 @@
             }
             $.post("/setDB",ops,function(data){
                 if(data.result === 'success'){
+                    $('#console,.content').hide();
+                    $('#ID').val('');
+                    $('#URL').val('');
+                    $('#pasword').val('');
+                    $('#title').val('');
+                    $('#category button,#tag button').removeClass('btn-success');
                     alert('数据插入成功');
                 }else{
                     alert(data.msg);
