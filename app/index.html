@@ -215,7 +215,9 @@
             }
             $.post("/setDB",ops,function(data){
                 if(data.result === 'success'){
+                    alert('数据插入成功');
                 }else{
+                    alert(data.msg);
                 }
             });
         });
